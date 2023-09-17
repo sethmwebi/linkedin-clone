@@ -1,18 +1,39 @@
-import { Pressable, StyleSheet, TextInput } from "react-native";
+import { Image, Pressable, StyleSheet, TextInput } from "react-native";
 
 import { Text, View } from "../../components/Themed";
 import { useNavigation, useRouter } from "expo-router";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLayoutEffect, useState } from "react";
+import * as ImagePicker from "expo-image-picker";
 
 export default function NewPostScreen() {
   const [content, setContent] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+
   const navigation = useNavigation();
   const router = useRouter();
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      // allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   const onPost = () => {
     console.warn("Posting: ", content);
     router.push("/(tabs)/");
     setContent("");
+    setImage(null);
   };
 
   useLayoutEffect(() => {
@@ -34,6 +55,22 @@ export default function NewPostScreen() {
         style={styles.input}
         multiline
       />
+      {image && <Image source={{ uri: image }} style={styles.image} />}
+      <View style={styles.footer}>
+        <Pressable onPress={pickImage} style={styles.iconButton}>
+          <FontAwesome name="image" size={24} color="black" />
+        </Pressable>
+        <Pressable style={styles.iconButton}>
+          <FontAwesome name="camera" size={24} color="black" />
+        </Pressable>
+        <Pressable style={styles.iconButton}>
+          <MaterialCommunityIcons
+            name="dots-horizontal"
+            size={24}
+            color="black"
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -45,6 +82,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 18,
+    marginBottom: 70,
   },
   title: {
     fontSize: 20,
@@ -58,8 +96,23 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginRight: 10,
   },
+  image: {
+    width: "100%",
+    aspectRatio: 1,
+    marginTop: "auto",
+  },
   postButtonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  footer: {
+    marginTop: "auto",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  iconButton: {
+    backgroundColor: "gainsboro",
+    borderRadius: 40,
+    padding: 20,
   },
 });
