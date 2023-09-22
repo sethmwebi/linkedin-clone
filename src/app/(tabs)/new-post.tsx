@@ -8,6 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 
 export default function NewPostScreen() {
   const [content, setContent] = useState("");
+  const [focussed, setFocussed] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
 
   const navigation = useNavigation();
@@ -21,8 +22,6 @@ export default function NewPostScreen() {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -53,6 +52,7 @@ export default function NewPostScreen() {
         onChangeText={setContent}
         placeholder="What do you want to talk about?"
         style={styles.input}
+        onFocus={() => setFocussed((prev) => !prev)}
         multiline
       />
       {image && <Image source={{ uri: image }} style={styles.image} />}

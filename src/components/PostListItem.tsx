@@ -30,15 +30,15 @@ export default function PostListItem({ post }: PostListItemProps) {
     <Link href={`/posts/${post.id}`} asChild>
       <Pressable style={styles.container}>
         {/* header */}
-        <Link href={`/users/${post.author.id}`} asChild>
+        <Link href={`/users/${post.profile.id}`} asChild>
           <Pressable style={styles.header}>
             <Image
-              source={{ uri: post.author.image }}
+              source={{ uri: post.profile.image }}
               style={styles.userImage}
             />
             <View>
-              <Text style={styles.username}>{post.author.name}</Text>
-              <Text>{post.author.position}</Text>
+              <Text style={styles.username}>{post.profile.name}</Text>
+              <Text>{post.profile.position}</Text>
             </View>
           </Pressable>
         </Link>
@@ -62,37 +62,37 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: "100%",
     maxWidth: 500,
-    alignSelf: "center",
+    alignSelf: "center"
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    padding: 10
   },
   username: {
     fontWeight: "bold",
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 5
   },
   userImage: {
     height: 50,
     width: 50,
     borderRadius: 25,
-    marginRight: 10,
+    marginRight: 10
   },
   postImage: {
     width: "100%",
-    aspectRatio: 3 / 2,
+    aspectRatio: 3 / 2
   },
   content: {
     margin: 10,
-    marginTop: 0,
+    marginTop: 0
   },
   footer: {
     flexDirection: "row",
     padding: 10,
     justifyContent: "space-between",
     borderTopWidth: 0.5,
-    borderColor: "lightgray",
-  },
+    borderColor: "lightgray"
+  }
 });
