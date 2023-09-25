@@ -5,31 +5,57 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  ActivityIndicator
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import userJson from "../../../assets/data/user.json";
-import { User } from "@/types";
+import { Experience, User } from "@/types";
 import ExperienceLIstItem from "@/components/ExperienceLIstItem";
+import { gql, useQuery } from "@apollo/client";
+
+const query = gql`
+  query MyQuery($id: ID!) {
+    profile(id: $id) {
+      name
+      image
+      position
+      about
+      experience {
+        id
+        companyname
+        companyimage
+        title
+      }
+      backimage
+    }
+  }
+`;
 
 export default function UserProfile() {
-  const [user, setUser] = useState<User>(userJson);
   const { id } = useLocalSearchParams();
+
+  const { loading, error, data } = useQuery(query, { variables: { id } });
+  const user = data?.profile;
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: user.name });
+    navigation.setOptions({ title: user?.name || "User" });
   }, [user?.name]);
 
   const onConnect = () => {
     console.warn("Connect pressed");
   };
+
+  if (loading) return <ActivityIndicator />;
+
+  if (error) return <Text>Something went wrong!</Text>;
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={styles.header}>
         {/* bg image */}
-        <Image source={{ uri: user.backImage }} style={styles.backImage} />
+        <Image source={{ uri: user.backimage }} style={styles.backImage} />
         <View style={styles.headerContent}>
           {/* profile image */}
           <Image source={{ uri: user.image }} style={styles.image} />
@@ -50,7 +76,7 @@ export default function UserProfile() {
       {/* Experience */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Experience</Text>
-        {user.experience?.map((experience) => (
+        {user.experience?.map((experience: Experience) => (
           <ExperienceLIstItem key={experience.id} experience={experience} />
         ))}
       </View>
@@ -62,12 +88,12 @@ const styles = StyleSheet.create({
   container: {},
   header: {
     backgroundColor: "white",
-    marginBottom: 5,
+    marginBottom: 5
   },
   backImage: {
     width: "100%",
     aspectRatio: 5 / 2,
-    marginBottom: -60,
+    marginBottom: -60
   },
   headerContent: { padding: 10, paddingTop: 0 },
   image: {
@@ -75,11 +101,11 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: "white",
+    borderColor: "white"
   },
   name: {
     fontSize: 24,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   position: {},
   button: {
@@ -87,23 +113,23 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     borderRadius: 50,
-    marginVertical: 10,
+    marginVertical: 10
   },
   buttonText: {
     color: "white",
-    fontWeight: "500",
+    fontWeight: "500"
   },
   section: {
     backgroundColor: "white",
     padding: 10,
-    marginVertical: 5,
+    marginVertical: 5
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "500",
-    marginVertical: 5,
+    marginVertical: 5
   },
   paragraph: {
-    lineHeight: 20,
-  },
+    lineHeight: 20
+  }
 });

@@ -7,14 +7,14 @@ type ExperienceListItemProps = {
 };
 
 export default function ExperienceLIstItem({
-  experience,
+  experience
 }: ExperienceListItemProps) {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: experience.companyImage }} style={styles.image} />
+      <Image source={{ uri: experience.companyimage }} style={styles.image} />
       <View>
         <Text style={styles.title}>{experience.title}</Text>
-        <Text>{experience.companyName}</Text>
+        <Text>{experience.companyname}</Text>
       </View>
     </View>
   );
@@ -28,15 +28,15 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     marginTop: 10,
     borderBottomWidth: 0.5,
-    borderColor: "lightgray",
+    borderColor: "lightgray"
   },
   image: {
     width: 50,
     aspectRatio: 1,
-    marginRight: 5,
+    marginRight: 5
   },
   title: {
     fontSize: 16,
-    fontWeight: "500",
-  },
+    fontWeight: "500"
+  }
 });
