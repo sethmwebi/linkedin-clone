@@ -5,11 +5,25 @@ import { useNavigation, useRouter } from "expo-router";
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLayoutEffect, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
+import { gql, useMutation } from "@apollo/client";
+
+const insertPost = gql`
+  mutation MyMutation($userId: ID, $image: String, $content: String!) {
+    insertPost(userid: $userId, image: $image, content: $content) {
+      content
+      id
+      image
+      userid
+    }
+  }
+`;
 
 export default function NewPostScreen() {
   const [content, setContent] = useState("");
   const [focussed, setFocussed] = useState<boolean>(false);
   const [image, setImage] = useState<string | null>(null);
+
+  const [handleMutation, { loading, error, data }] = useMutation(insertPost);
 
   const navigation = useNavigation();
   const router = useRouter();
@@ -20,7 +34,7 @@ export default function NewPostScreen() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       // allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 1
     });
 
     if (!result.canceled) {
@@ -29,21 +43,28 @@ export default function NewPostScreen() {
   };
 
   const onPost = () => {
-    console.warn("Posting: ", content);
-    router.push("/(tabs)/");
-    setContent("");
-    setImage(null);
+    try {
+      handleMutation({ variables: { userId: 2, content } });
+
+      router.push("/(tabs)/");
+      setContent("");
+      setImage(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Pressable onPress={onPost} style={styles.postButton}>
-          <Text style={styles.postButtonText}>submit</Text>
+          <Text style={styles.postButtonText}>
+            {loading ? "submitting..." : "submit"}
+          </Text>
         </Pressable>
-      ),
+      )
     });
-  }, [onPost]);
+  }, [onPost, loading]);
 
   return (
     <View style={styles.container}>
@@ -78,15 +99,15 @@ export default function NewPostScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
+    padding: 15
   },
   input: {
     fontSize: 18,
-    marginBottom: 70,
+    marginBottom: 70
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   // header
   postButton: {
@@ -94,25 +115,25 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingHorizontal: 15,
     borderRadius: 50,
-    marginRight: 10,
+    marginRight: 10
   },
   image: {
     width: "100%",
     aspectRatio: 1,
-    marginTop: "auto",
+    marginTop: "auto"
   },
   postButtonText: {
     color: "white",
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   footer: {
     marginTop: "auto",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-around"
   },
   iconButton: {
     backgroundColor: "gainsboro",
     borderRadius: 40,
-    padding: 20,
-  },
+    padding: 20
+  }
 });
