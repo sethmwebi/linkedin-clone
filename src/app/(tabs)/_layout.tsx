@@ -20,7 +20,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#191919",
+        tabBarActiveTintColor: "#191919"
       }}
     >
       <Tabs.Screen
@@ -41,14 +41,14 @@ export default function TabLayout() {
                 )}
               </Pressable>
             </Link>
-          ),
+          )
         }}
       />
       <Tabs.Screen
         name="network"
         options={{
           title: "My Network",
-          tabBarIcon: ({ color }) => <TabBarIcon name="group" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="group" color={color} />
         }}
       />
       <Tabs.Screen
@@ -57,23 +57,21 @@ export default function TabLayout() {
           title: "Post",
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="plus-square" color={color} />
-          ),
+          )
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
           title: "Notifications",
-          tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />
         }}
       />
       <Tabs.Screen
-        name="jobs"
+        name="profile"
         options={{
-          title: "Jobs",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="briefcase" color={color} />
-          ),
+          title: "Profile",
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />
         }}
       />
     </Tabs>

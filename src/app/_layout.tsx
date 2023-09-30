@@ -7,12 +7,15 @@ import {
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { ActivityIndicator, useColorScheme } from "react-native";
 import { ApolloProvider } from "@apollo/client";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo";
 import client from "@/apollo/client";
 import AuthScreen from "@/components/auth/AuthScreen";
 import * as SecureStore from "expo-secure-store";
+import UserContextProvider, { useUserContext } from "@/context/UserContext";
+import SetupProfileScreen from "@/components/auth/SetupProfileScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -67,10 +70,10 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return <RootLayoutNavWithProviders />;
 }
 
-function RootLayoutNav() {
+function RootLayoutNavWithProviders() {
   const colorScheme = useColorScheme();
 
   return (
@@ -79,21 +82,48 @@ function RootLayoutNav() {
       tokenCache={tokenCache}
     >
       <ApolloProvider client={client}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <SignedIn>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-              <Stack.Screen name="posts/[id]" options={{ title: "Post" }} />
-            </Stack>
-          </SignedIn>
-          <SignedOut>
-            <AuthScreen />
-          </SignedOut>
-        </ThemeProvider>
+        <UserContextProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <RootLayoutNav />
+          </ThemeProvider>
+        </UserContextProvider>
       </ApolloProvider>
     </ClerkProvider>
+  );
+}
+
+function RootLayoutNav() {
+  // @ts-ignore
+  const { authUser, dbUser, loading } = useUserContext();
+
+  // if (loading) {
+  //   return (
+  //     <SafeAreaView
+  //       style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+  //     >
+  //       <ActivityIndicator />
+  //     </SafeAreaView>
+  //   );
+  // }
+
+  return (
+    <>
+      <SignedIn>
+        {!dbUser ? (
+          <SetupProfileScreen />
+        ) : (
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            <Stack.Screen name="posts/[id]" options={{ title: "Post" }} />
+          </Stack>
+        )}
+      </SignedIn>
+      <SignedOut>
+        <AuthScreen />
+      </SignedOut>
+    </>
   );
 }
